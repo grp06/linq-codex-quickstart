@@ -1,0 +1,13 @@
+{
+  "name": "linq-codex-quickstart",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env.local server.js",
+    "start": "node --env-file-if-exists=.env.local server.js",
+    "phone-numbers": "node --env-file-if-exists=.env.local server.js --phone-numbers",
+    "first-message": "node --env-file-if-exists=.env.local server.js --send",
+    "subscribe:webhook": "node --env-file-if-exists=.env.local server.js --subscribe-webhook",
+    "codex:smoke": "node --env-file-if-exists=.env.local server.js --codex-smoke"
+  }
+}
