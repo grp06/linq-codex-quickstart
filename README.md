@@ -4,7 +4,9 @@ This repo contains a Codex skill that sets up a local Linq-to-Codex text message
 
 The idea is simple: you text your Linq sandbox number, Linq sends a webhook to a small local Node server, the server asks local Codex to answer, and the reply goes back to the same Linq conversation.
 
-The skill is meant to do the whole setup in one pass. It opens the Linq sandbox dashboard in Chrome, finds the sandbox send-from number, asks for your phone number if you did not provide it, writes the local bridge server, starts a public tunnel, creates the Linq webhook subscription, saves the signing secret, and validates that the public webhook rejects unsigned requests.
+The skill is meant to do the whole setup in one pass. It opens the Linq sandbox dashboard in the Codex in-app Browser, finds the sandbox send-from number, asks for your phone number if you did not provide it, writes the local bridge server, starts a public tunnel, creates the Linq webhook subscription, saves the signing secret, and validates that the public webhook rejects unsigned requests.
+
+If you are not logged in to Linq, the skill pauses and leaves the sandbox page open in the Codex in-app Browser so you can log in there. After that, you can ask Codex to continue.
 
 To use it from Codex after installing the skill:
 
