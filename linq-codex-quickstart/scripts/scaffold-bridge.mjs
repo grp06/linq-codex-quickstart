@@ -16,10 +16,20 @@ function argValue(name) {
 }
 
 function normalizeUsPhone(value, label) {
-  if (!/^\+1\d{10}$/.test(String(value || ""))) {
-    throw new Error(`${label} must be in +1XXXXXXXXXX format.`);
+  const raw = String(value || "").trim();
+  if (/^\+1\d{10}$/.test(raw)) {
+    return raw;
   }
-  return value;
+
+  const digits = raw.replace(/\D/g, "");
+  if (/^\d{10}$/.test(digits)) {
+    return `+1${digits}`;
+  }
+  if (/^1\d{10}$/.test(digits)) {
+    return `+${digits}`;
+  }
+
+  throw new Error(`${label} must be a US phone number that can normalize to +1XXXXXXXXXX.`);
 }
 
 function envLine(key, value) {

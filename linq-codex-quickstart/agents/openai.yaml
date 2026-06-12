@@ -1,4 +1,4 @@
 interface:
   display_name: "Linq Codex Quickstart"
   short_description: "Set up Linq SMS to local Codex replies"
-  default_prompt: "Use $linq-codex-quickstart with my phone number +1XXXXXXXXXX to set up a local Linq to Codex SMS bridge."
+  default_prompt: "Use $linq-codex-quickstart with my phone number 321-555-0123 to set up a local Linq to Codex SMS bridge."

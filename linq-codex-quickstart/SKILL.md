@@ -1,7 +1,7 @@
 ---
 name: linq-codex-quickstart
 description: >-
-  Sets up a local Linq SMS to Codex bridge end-to-end: discovers the Linq sandbox send-from number in the Codex in-app Browser, scaffolds a Node webhook server, starts a public tunnel, creates the Linq webhook subscription, saves the signing secret, and validates Codex replies. Use when the user asks to connect Linq texts, SMS, iMessage, or a Linq number to local Codex/Codex App Server behavior.
+  Sets up a local Linq SMS to Codex bridge end-to-end: normalizes the user's US phone number, discovers the Linq sandbox send-from number and API key in the Codex in-app Browser, scaffolds a Node webhook server, starts a public tunnel, creates the Linq webhook subscription, saves the signing secret, and validates Codex replies. Use when the user asks to connect Linq texts, SMS, iMessage, or a Linq number to local Codex/Codex App Server behavior.
 ---
 
 # Linq Codex Quickstart
@@ -14,24 +14,27 @@ user phone -> Linq number -> Linq webhook -> local Node bridge -> codex exec -> 
 
 ## Required Input
 
-Before doing anything, extract the user's phone number from the invocation.
+Before doing anything, extract and normalize the user's phone number from the invocation.
 
-- Required format: `+1` followed by exactly 10 digits, for example `+13219176436`.
-- If the invocation does not include a matching phone number, stop immediately and ask only: `What is your phone number in +1XXXXXXXXXX format?`
-- If the invocation includes a malformed phone number, stop and ask for the phone number again in `+1XXXXXXXXXX` format.
+- Strip spaces, hyphens, dots, and parentheses before evaluating digits.
+- If the result is 10 digits, prepend `+1`.
+- If the result is 11 digits beginning with `1`, prepend `+`.
+- If the result already matches `+1` followed by 10 digits, use it as-is.
+- If no phone number is present, stop immediately and ask only: `What is your phone number?`
+- If digits are present but cannot be normalized to a US `+1XXXXXXXXXX` number, stop and ask for the phone number again.
 - Do not open the browser, create files, start servers, or call Linq until the phone number is present and valid.
 
 ## Workflow
 
 Track progress as a checklist while working.
 
-1. Validate the user phone number.
+1. Normalize the user phone number.
 2. Use `browser:control-in-app-browser` to open `https://dashboard.linqapp.com/sandbox` in the Codex in-app Browser.
 3. Read the visible dashboard and extract:
    - `LINQ_FROM_NUMBER`: the sandbox/Linq send-from number shown in the dashboard.
-   - `LINQ_API_KEY`: the sandbox API key or token if visible.
+   - `LINQ_API_KEY`: the sandbox API key or token. If it is masked, reveal it with the dashboard eye/visibility icon first.
 4. If the send-from number is missing or ambiguous, ask the user to identify the correct Linq number before proceeding.
-5. If the API key is not visible in the dashboard or an existing local env file, ask the user for the Linq API key. Do not echo it back.
+5. If the API key remains unavailable after trying the reveal icon, ask the user for the Linq API key. Do not echo it back.
 6. Scaffold the bridge project with `scripts/scaffold-bridge.mjs`.
 7. Verify `codex login status` exits 0 and `npm run codex:smoke` succeeds.
 8. Start the bridge server with `npm run dev`.
@@ -61,6 +64,8 @@ Use the Browser skill exactly for dashboard work:
 
 Find the send-from number from visible labels such as `sandbox`, `phone number`, `from`, `send from`, `Linq number`, or similar. Normalize it to `+1XXXXXXXXXX`. If multiple candidates remain after reading labels and nearby text, ask the user which number to use.
 
+For the API key, first look for the visible key/token field. If it is masked, look beside it for a small eye, visibility, show, reveal, or unhide button/icon. Click that control, then read the revealed key from the visible page. Do not print the key in chat, take screenshots containing it, inspect browser storage, or use network logs. If no reveal control exists or the revealed value still cannot be read, ask the user for the Linq API key.
+
 ## Scaffold Command
 
 Create a temporary JSON config file with mode `600`, then delete it after scaffolding. Never print secrets.
@@ -69,8 +74,8 @@ Create a temporary JSON config file with mode `600`, then delete it after scaffo
 {
   "targetDir": "/absolute/path/linq-codex-quickstart",
   "linqApiKey": "secret",
-  "linqFromNumber": "+19048741368",
-  "linqToNumber": "+13219176436",
+  "linqFromNumber": "+19045550123",
+  "linqToNumber": "+13215550123",
   "codexRepoPath": "/absolute/path/to/repo"
 }
 ```
